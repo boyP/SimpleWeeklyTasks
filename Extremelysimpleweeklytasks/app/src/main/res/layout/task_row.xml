@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/taskItem"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_height"
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        style="@style/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/taskDetails"
+        style="@style/taskDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/taskName"
+        style="@style/listTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tour of Cancun"/>
+
+    <TextView
+        style="@style/listTextView"
+        android:id="@+id/taskTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10:00PM"/>
+
+</LinearLayout>
+
+
+</RelativeLayout>

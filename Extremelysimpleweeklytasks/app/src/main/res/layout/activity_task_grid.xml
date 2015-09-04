@@ -1,0 +1,51 @@
+<!--<org.lucasr.dspec.DesignSpecFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:designSpec="@raw/spec">
+-->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".TaskGrid">
+
+        <include
+            android:id="@+id/app_bar"
+            layout="@layout/app_bar" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/app_bar">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/app_bar" />
+
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/addButton"
+            android:layout_width="@dimen/button_diameter"
+            android:layout_height="@dimen/button_diameter"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/add_button_margin"
+            android:layout_marginEnd="@dimen/add_button_margin"
+            android:elevation="@dimen/elevation_low"
+            android:stateListAnimator="@anim/button_elevation"
+            android:tint="@android:color/white"
+            android:background="@drawable/oval_ripple"
+            android:src="@android:drawable/ic_input_add" />
+
+    </RelativeLayout>
+
+<!--
+</org.lucasr.dspec.DesignSpecFrameLayout>
+-->

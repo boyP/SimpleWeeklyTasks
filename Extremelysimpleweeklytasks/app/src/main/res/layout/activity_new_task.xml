@@ -1,0 +1,123 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NewTask">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/app_bar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/app_bar"
+        android:paddingLeft="@dimen/app_margin"
+        android:paddingRight="@dimen/app_margin"
+        android:paddingTop="@dimen/between_content_space">
+        <!--
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_below="@id/app_bar"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:divider="@drawable/divider"
+                android:showDividers="middle"
+                android:dividerPadding="15dp"
+                android:paddingRight="@dimen/app_margin"
+                android:paddingLeft="@dimen/app_margin"
+                >
+        -->
+        <ImageView
+            android:id="@+id/titleIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:src="@mipmap/ic_launcher" />
+
+        <EditText
+            android:id="@+id/taskTitle"
+            style="@style/body1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/formRowHeight"
+            android:paddingLeft="@dimen/list_text_margin"
+            android:text="@string/task_title" />
+
+        <ImageView
+            android:id="@+id/priorityIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/taskTitle"
+            android:contentDescription=""
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/priorityLabel"
+            style="@style/body1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/taskTitle"
+            android:gravity="center"
+            android:paddingEnd="@dimen/list_text_margin"
+            android:paddingStart="@dimen/list_text_margin"
+            android:text="@string/priority" />
+
+
+        <Switch
+            android:id="@+id/prioritySwitch"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/taskTitle" />
+
+
+        <ImageView
+            android:id="@+id/dateIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/priorityLabel"
+            android:contentDescription=""
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/dateLabel"
+            style="@style/body1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/priorityLabel"
+            android:gravity="center"
+            android:paddingEnd="@dimen/list_text_margin"
+            android:paddingStart="@dimen/list_text_margin"
+            android:text="@string/date" />
+
+
+        <Button
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/priorityLabel"
+            style="@style/body1"/>
+
+        <ImageView
+            android:id="@+id/notesIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/dateLabel"
+            android:contentDescription=""
+            android:src="@mipmap/ic_launcher" />
+
+        <EditText
+            android:id="@+id/taskDescription"
+            style="@style/body1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/dateLabel"
+            android:paddingLeft="@dimen/list_text_margin"
+            android:text="@string/add_notes" />
+
+        <!-- </LinearLayout>-->
+    </RelativeLayout>
+
+</RelativeLayout>

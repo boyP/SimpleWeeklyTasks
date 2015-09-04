@@ -1,0 +1,118 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    style="@style/dialog">
+
+    <include
+        android:id="@+id/app_bar"
+        layout="@layout/app_bar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/app_bar"
+        android:layout_above="@+id/delete_button"
+        android:paddingLeft="@dimen/app_margin"
+        android:paddingRight="@dimen/app_margin"
+        android:paddingTop="@dimen/between_content_space">
+
+        <ImageView
+            android:id="@+id/update_title_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:src="@mipmap/ic_launcher" />
+
+        <EditText
+            android:id="@+id/update_title"
+            style="@style/body1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/formRowHeight"
+            android:paddingLeft="@dimen/list_text_margin"
+            android:text="@string/task_title" />
+
+        <ImageView
+            android:id="@+id/update_priority_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/update_title"
+            android:contentDescription=""
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/update_priority"
+            style="@style/body1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/update_title"
+            android:gravity="center"
+            android:paddingEnd="@dimen/list_text_margin"
+            android:paddingStart="@dimen/list_text_margin"
+            android:text="@string/priority" />
+
+
+        <Switch
+            android:id="@+id/update_priority_switch"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/update_title" />
+
+
+        <ImageView
+            android:id="@+id/update_date_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/update_priority"
+            android:contentDescription=""
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/update_date_label"
+            style="@style/body1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/update_priority"
+            android:gravity="center"
+            android:paddingEnd="@dimen/list_text_margin"
+            android:paddingStart="@dimen/list_text_margin"
+            android:text="@string/date" />
+
+
+        <Button
+            android:id="@+id/update_date"
+            style="@style/body1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/update_priority" />
+
+        <ImageView
+            android:id="@+id/update_notes_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/update_date_label"
+            android:contentDescription=""
+            android:src="@mipmap/ic_launcher" />
+
+        <EditText
+            android:id="@+id/update_task_description"
+            style="@style/body1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/formRowHeight"
+            android:layout_below="@+id/update_date_label"
+            android:paddingLeft="@dimen/list_text_margin"
+            android:text="@string/add_notes" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/delete_button"
+        android:background="@color/dividerColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

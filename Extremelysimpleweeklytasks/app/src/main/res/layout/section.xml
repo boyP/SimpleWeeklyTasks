@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/sub_header_height"
+    android:gravity="center_vertical"
+    android:paddingLeft="@dimen/app_margin"
+    android:paddingRight="@dimen/app_margin"
+    android:singleLine="true"
+    android:textAllCaps="true"
+    android:textColor="@color/primaryText"
+    android:background="@color/sectionColor"
+    android:textSize="14sp"
+    android:id="@+id/section_text"
+    android:fontFamily="Roboto Medium" />

@@ -1,0 +1,55 @@
+<!-- res/values/styles.xml -->
+<resources>
+    <!-- your theme inherits from the material theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- theme customizations -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryColorDark</item>
+        <item name="colorAccent">@color/accentColor</item>
+
+
+    </style>
+    
+    <style name="MyCustomToolBarTheme" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/primaryText</item>
+        <item name="android:textColorSecondary">@color/secondaryText</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="listTextView">
+        <item name="android:textSize">9pt</item>
+        <item name="android:textColorPrimary">@color/primaryText</item>
+        <item name="android:textColorSecondary">@color/secondaryText</item>
+    </style>
+
+    <style name="checkbox">
+        <item name="android:layout_marginLeft">@dimen/app_margin</item>
+        <item name="android:layout_marginRight">@dimen/app_margin</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="taskDetails">
+        <item name="android:layout_marginLeft">@dimen/list_text_margin</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="windowMenu" >
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+    
+    <style name="body1">
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/primaryText</item>
+    </style>
+
+    <style name="dialog" parent="android:Theme" >
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+
+</resources>

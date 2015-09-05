@@ -26,8 +26,8 @@ public class Task {
         this.isCompleted = false;
         this.name = "";
         this.description = "";
-        this.date = null;
-        this.time = null;
+        this.date = new Date();
+        this.time = "";
         dateFormatter = new SimpleDateFormat(CalendarUtils.FORMAT);
     }
 
@@ -75,6 +75,7 @@ public class Task {
         }
         catch (ParseException e) {
             Log.e("Task.java", "Exception when parsing date as string");
+            this.date = new Date();
         }
     }
 

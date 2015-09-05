@@ -5,9 +5,7 @@ package com.application.blaze.extremelysimpleweeklytasks;
  */
 public interface DataChangedObserver {
 
-    void onInsert(Task t);
-    void onDelete(Task t);
-    void onUpdate(Task t);
-
-    void registerAsObserver();
+    void onInsert(Task t, int position);
+    void onDelete(Task t, int position);
+    void onUpdate(Task t, int position);
 }

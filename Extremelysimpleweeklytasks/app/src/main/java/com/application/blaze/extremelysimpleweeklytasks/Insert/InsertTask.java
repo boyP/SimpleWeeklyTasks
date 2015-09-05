@@ -1,31 +1,30 @@
 package com.application.blaze.extremelysimpleweeklytasks.insert;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
+import android.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.support.v7.widget.Toolbar;
 
+import com.application.blaze.extremelysimpleweeklytasks.DataChangedObserver;
 import com.application.blaze.extremelysimpleweeklytasks.MyApplication;
 import com.application.blaze.extremelysimpleweeklytasks.R;
 import com.application.blaze.extremelysimpleweeklytasks.Task;
-import com.application.blaze.extremelysimpleweeklytasks.TaskGrid;
 
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * This activity is for creating a new task to add to the taskList
- */
-public class NewTask extends AppCompatActivity {
+
+public class InsertTask extends DialogFragment {
 
     /* Layout fields */
     private EditText taskName;
@@ -39,19 +38,25 @@ public class NewTask extends AppCompatActivity {
     private int mMonth;
     private int mDay;
     private Calendar newDate;
+    private DataChangedObserver observer;
 
+
+    public InsertTask() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_task);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        //UI/UX component initializations
-        taskName = (EditText) findViewById(R.id.taskTitle);
-        priority = (Switch) findViewById(R.id.prioritySwitch);
-        date = (Button) findViewById(R.id.date);
+        //Initialize and set the view fields
+        //********************************************
+        taskName = (EditText) view.findViewById(R.id.taskTitle);
+        priority = (Switch) view.findViewById(R.id.prioritySwitch);
+        date = (Button) view.findViewById(R.id.date);
 
-        //Setting the initial text of the button
+        //Initialize and set the calendar fields
+        //********************************************
         newDate = Calendar.getInstance();
         mYear = newDate.get(Calendar.YEAR);
         mMonth = newDate.get(Calendar.MONTH);
@@ -60,14 +65,23 @@ public class NewTask extends AppCompatActivity {
                 + (mMonth + 1) + "-" + mYear);
 
         //Android toolbar configuration
-        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar); // Attaching the layout to the toolbar object
-        setSupportActionBar(toolbar);                   // Setting toolbar as the ActionBar with setSupportActionBar() call
-        android.support.v7.app.ActionBar bar = getSupportActionBar();
-        if (bar != null) {
-            bar.setDisplayShowTitleEnabled(false);
-            bar.setHomeButtonEnabled(true);
-            bar.setDisplayHomeAsUpEnabled(true);
-        }
+        //*********************************************
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.app_bar);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_update_save:
+                        addTask();
+                        dismiss();
+                    case R.id.action_update_cancel:
+                        dismiss();
+                }
+                return true;
+            }
+        });
+        toolbar.inflateMenu(R.menu.menu_dialog);
+        toolbar.setTitle("New Task");
 
         //Set OnClickListeners
         date.setOnClickListener(new View.OnClickListener() {
@@ -79,34 +93,31 @@ public class NewTask extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_new_task, menu);
-        return true;
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                addTask();
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.activity_new_task, container, false);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 
     /**
      * The onClick method
      */
-    public void addTask() {
+    private void addTask() {
         //Gets the task information from the UI/UX
         String name = taskName.getText().toString();
         Date taskDate = newDate.getTime();
@@ -124,20 +135,20 @@ public class NewTask extends AppCompatActivity {
             Log.e("Database", "Failed to add task");
         } else {
             //Tells the view to load the new task
-            TaskGrid.notifyOnInsert(t);
+            observer.onInsert(t, 1);
         }
     }
 
     /**
      * Responsible for opening the date picker dialog
      */
-    public void openDatePickerDialog() {
+    private void openDatePickerDialog() {
         newDate = Calendar.getInstance();
         mYear = newDate.get(Calendar.YEAR);
         mMonth = newDate.get(Calendar.MONTH);
         mDay = newDate.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog dpd = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog dpd = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 date.setText(dayOfMonth + "-"
@@ -146,6 +157,14 @@ public class NewTask extends AppCompatActivity {
             }
         }, mYear, mMonth, mDay);
         dpd.show();
+    }
+
+    /**
+     * Sets the observer to to enable callbacks to update the main Activity's view
+     * @param o
+     */
+    public void setDataChangedObserver(DataChangedObserver o) {
+        observer = o;
     }
 
 }

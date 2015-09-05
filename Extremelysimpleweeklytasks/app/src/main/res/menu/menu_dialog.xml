@@ -5,9 +5,14 @@
     >
 
     <item
-        android:id="@+id/action_save"
+        android:id="@+id/action_update_cancel"
         android:orderInCategory="200"
+        android:title="Cancel"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_update_save"
+        android:orderInCategory="300"
         android:title="Save"
-        app:showAsAction="ifRoom"></item>
+        app:showAsAction="ifRoom"/>
 
 </menu>

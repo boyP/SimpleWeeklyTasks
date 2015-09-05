@@ -1,6 +1,7 @@
 package com.application.blaze.extremelysimpleweeklytasks;
 
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -17,14 +18,15 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import com.application.blaze.extremelysimpleweeklytasks.Insert.NewTask;
+import com.application.blaze.extremelysimpleweeklytasks.insert.InsertTask;
+import com.application.blaze.extremelysimpleweeklytasks.insert.NewTask;
 import com.application.blaze.extremelysimpleweeklytasks.update.UpdateTask;
 import com.application.blaze.extremelysimpleweeklytasks.util.CalendarUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDialogListener {
+public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
 
     private Toolbar toolbar;
     private RecyclerView recyclerView;
@@ -70,11 +72,7 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
 
             @Override
             public void onLongClick(View view, int position) {
-                //For now deletes the selected task
-                Task t = adapter.remove(position);
-                if (t != null) {
-                    MyApplication.getWritableDatabase().deleteTask(t.getName());
-                }
+
             }
         }));
 
@@ -85,7 +83,8 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
             @Override
             public void onClick(View view) {
                 Log.e("TaskGrid", "Clicked Floating button");
-                startActivity(new Intent(view.getContext(), NewTask.class));
+                //startActivity(new Intent(view.getContext(), NewTask.class));
+                showInsertDialogFragment();
             }
         });
     }
@@ -101,8 +100,7 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
      * For now it creates dummy tasks, but in reality it should be getting data either from the database or from the User
      */
     private List<Task> getTaskListsByDate(String date) {
-        List<Task> taskList = MyApplication.getWritableDatabase().getAllTasksBasedOnDay(date);
-        return taskList;
+        return MyApplication.getWritableDatabase().getAllTasksBasedOnDay(date);
     }
 
     @Override
@@ -120,16 +118,21 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Update Dialog callback
-     * @param t : The updated task
-     * @param position : The old position of the task
-     */
     @Override
-    public void onFinishUpdateDialog(Task t, int position) {
-        Toast.makeText(this, "Task is at, " + position, Toast.LENGTH_SHORT).show();
+    public void onInsert(Task t, int position) {
+        adapter.add(t, position);
     }
 
+    @Override
+    public void onDelete(Task t, int position) {
+        adapter.remove(position);
+    }
+
+    @Override
+    public void onUpdate(Task t, int position) {
+        adapter.remove(position);
+        adapter.add(t, position);
+    }
 
     class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
 
@@ -150,7 +153,7 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
                 @Override
                 public void onLongPress(MotionEvent e) {
                     View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
-                    if(child != null && clickListener!= null) {
+                    if (child != null && clickListener != null) {
                         clickListener.onLongClick(child, recyclerView.getChildLayoutPosition(child));
                     }
                 }
@@ -163,7 +166,7 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
             Log.e("Recycler", "Intercept event" + e);
 
             View child = rv.findChildViewUnder(e.getX(), e.getY());
-            if(child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
+            if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
 
                 clickListener.onClick(child, rv.getChildLayoutPosition(child));
             }
@@ -183,6 +186,7 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
 
     /**
      * When a task has been inserted into the database, call this method to update the recyclerView
+     *
      * @param t
      */
     public static void notifyOnInsert(Task t) {
@@ -191,6 +195,7 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
 
     public static interface ClickListener {
         public void onClick(View view, int position);
+
         public void onLongClick(View view, int position);
     }
 
@@ -290,17 +295,47 @@ public class TaskGrid extends AppCompatActivity implements UpdateTask.UpdateDial
 
     /**
      * Shows the update dialog fragment when a task is pressed
-     * @param t : The task that has been pressed
+     *
+     * @param t   : The task that has been pressed
      * @param pos : The position of the task in the recyclerView
      */
     private void showUpdateDialogFragment(Task t, int pos) {
+        FragmentManager fragmentManager = getFragmentManager();
         UpdateTask updateFragment = new UpdateTask();
-        FragmentManager manager = getFragmentManager();
-        updateFragment.show(manager, "update_fragment");
+        updateFragment.setDataChangedObserver(this);
         updateFragment.setCurrentTask(t, pos);
-        //FragmentTransaction transaction = manager.beginTransaction();
+
+        // The device is smaller, so show the fragment fullscreen
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // For a little polish, specify a transition animation
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        // To make it fullscreen, use the 'content' root view as the container
+        // for the fragment, which is always the root view for the activity
+        transaction.add(android.R.id.content, updateFragment)
+                .addToBackStack(null).commit();
+
+//        updateFragment.show(manager, "update_fragment");
+
         //transaction.add(R.layout.fragment_update_task, updateFragment, "UpdateFragment");
         //transaction.commit();
+    }
+
+    /**
+     * Shows the insert dialog fragment when the floating button is pressed
+     */
+    private void showInsertDialogFragment() {
+        FragmentManager fragmentManager = getFragmentManager();
+        InsertTask insertTask = new InsertTask();
+        insertTask.setDataChangedObserver(this);
+
+        // The device is smaller, so show the fragment fullscreen
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        // For a little polish, specify a transition animation
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        // To make it fullscreen, use the 'content' root view as the container
+        // for the fragment, which is always the root view for the activity
+        transaction.add(android.R.id.content, insertTask)
+                .addToBackStack(null).commit();
     }
 
 }

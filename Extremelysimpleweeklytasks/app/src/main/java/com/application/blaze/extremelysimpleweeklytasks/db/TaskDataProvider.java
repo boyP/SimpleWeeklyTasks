@@ -1,4 +1,4 @@
-package com.application.blaze.extremelysimpleweeklytasks;
+package com.application.blaze.extremelysimpleweeklytasks.db;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

@@ -135,7 +135,7 @@ public class InsertTask extends DialogFragment {
             Log.e("Database", "Failed to add task");
         } else {
             //Tells the view to load the new task
-            observer.onInsert(t, 1);
+            observer.onInsert(t, 0);
         }
     }
 

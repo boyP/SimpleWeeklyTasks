@@ -124,7 +124,7 @@ public class NewTask extends AppCompatActivity {
             Log.e("Database", "Failed to add task");
         } else {
             //Tells the view to load the new task
-            TaskGrid.notifyOnInsert(t);
+            //TaskGrid.notifyOnInsert(t);
         }
     }
 

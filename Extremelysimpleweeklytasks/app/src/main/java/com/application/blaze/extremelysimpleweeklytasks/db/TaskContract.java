@@ -41,9 +41,18 @@ public class TaskContract {
         contentValues.put(mHelper.COLUMN_PRIORITY, t.getHasPriority());
         contentValues.put(mHelper.COLUMN_DATE, t.getDateFormattedAsString());
 
-        long id = mDatabase.insert(mHelper.TABLE_NAME, null, contentValues);
-        mDatabase.close();
-        return id;
+        long id = 0;
+        try {
+            id = mDatabase.insert(mHelper.TABLE_NAME, null, contentValues);
+            Log.e("Database", "Inserting " + t.getName() + " succeeded");
+        }
+        catch (SQLiteException e) {
+            Log.e("Database", "Inserting " + t.getName() + " failed");
+        }
+        finally {
+            mDatabase.close();
+            return id;
+        }
     }
 
     /**

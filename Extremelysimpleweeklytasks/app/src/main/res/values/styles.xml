@@ -52,5 +52,14 @@
         <item name="android:background">@color/dividerColor</item>
     </style>
 
+    <style name="header">
+        <item name="android:textSize">15pt</item>
+        <item name="android:textColorPrimary">@color/primaryText</item>
+        <item name="android:textColorSecondary">@color/secondaryText</item>
+        <item name="android:layout_marginLeft">@dimen/app_margin</item>
+        <item name="android:layout_marginRight">@dimen/app_margin</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
 
 </resources>

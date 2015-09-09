@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     compile 'org.lucasr.dspec:dspec:0.1.1'
     compile 'net.danlew:android.joda:2.8.2'
+    compile 'com.bignerdranch.android:expandablerecyclerview:1.0.3'
 }

@@ -3,7 +3,6 @@ package com.application.blaze.extremelysimpleweeklytasks;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,24 +18,33 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.application.blaze.extremelysimpleweeklytasks.insert.InsertTask;
-import com.application.blaze.extremelysimpleweeklytasks.insert.NewTask;
 import com.application.blaze.extremelysimpleweeklytasks.update.UpdateTask;
 import com.application.blaze.extremelysimpleweeklytasks.util.CalendarUtils;
+import com.application.blaze.extremelysimpleweeklytasks.view.TaskAdapter;
+import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
 
+    public TaskGrid() {
+    }
+
     private Toolbar toolbar;
     private RecyclerView recyclerView;
-    private static TaskAdapter adapter;
-    private List<SectionedTaskAdapter.Section> sections;
+    private TaskAdapter taskAdapter;
+    private Context mContext;
+
+    //    private List<SectionedTaskAdapter.Section> sections;
+    private List<ParentHeader> headers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_grid);
+        mContext = this;
 
         //Toolbar initialization
         toolbar = (Toolbar) findViewById(R.id.app_bar);
@@ -48,16 +56,18 @@ public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
 
         //Gets the recyclerView tag we made in the xml file
         recyclerView = (RecyclerView) findViewById(R.id.recycle);
-
-        //Create a sectioned list
-        //*********************************
-        SectionedTaskAdapter sectionedAdapter = initializeSections();
-        recyclerView.setAdapter(adapter);
-
-        //Creates a linear list view with the data
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(llm);
+
+
+        //Create a sectioned list
+        //*********************************
+        taskAdapter = new TaskAdapter(this, initializeSections());
+        taskAdapter.setParentAndIconExpandOnClick(true);
+        taskAdapter.onRestoreInstanceState(savedInstanceState);
+
+        recyclerView.setAdapter(taskAdapter);
 
 
         //Create the touch listeners for the recycle view
@@ -66,8 +76,17 @@ public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
             @Override
             public void onClick(View view, int position) {
                 //Shows the update dialog
-                Task t = adapter.getTask(position);
-                showUpdateDialogFragment(t, position);
+                try {
+                    if (taskAdapter.isViewATask(position)) {
+                        Task t = taskAdapter.getTask(position);
+                        showUpdateDialogFragment(t, position);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //showUpdateDialogFragment(t, position);
+                Toast.makeText(mContext, "pos: " + position, Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -75,6 +94,7 @@ public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
 
             }
         }));
+
 
         //Floating Action Button listener
         //********************************
@@ -120,18 +140,37 @@ public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
 
     @Override
     public void onInsert(Task t, int position) {
-        adapter.add(t, position);
+        taskAdapter.addTaskToHeader(t);
     }
 
     @Override
     public void onDelete(Task t, int position) {
-        adapter.remove(position);
+        try {
+            if (taskAdapter.isViewATask(position)) {
+                taskAdapter.remove(position);
+            }
+            else {
+                Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onUpdate(Task t, int position) {
-        adapter.remove(position);
-        adapter.add(t, position);
+        try {
+            if (taskAdapter.isViewATask(position)) {
+                taskAdapter.update(t, position);
+            }
+            else {
+                Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
@@ -184,113 +223,93 @@ public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
         }
     }
 
-    /**
-     * When a task has been inserted into the database, call this method to update the recyclerView
-     *
-     * @param t
-     */
-    public static void notifyOnInsert(Task t) {
-        adapter.add(t, 1);
-    }
+    public interface ClickListener {
+        void onClick(View view, int position);
 
-    public static interface ClickListener {
-        public void onClick(View view, int position);
-
-        public void onLongClick(View view, int position);
+        void onLongClick(View view, int position);
     }
 
     /**
      * This is only called when the onCreate method is called, once when the activity is first started.
      */
-    private SectionedTaskAdapter initializeSections() {
-        //1.) Set the first section to position 0
-        //2.) Get from the database all the tasks corrosponding to that day and store it in the section
-        //3.) Set the next section to the previous section position + the number of tasks.
-        //4.) Create the sectionAdapter object and return it.
-        sections = new ArrayList<SectionedTaskAdapter.Section>();
+    private List<ParentObject> initializeSections() {
+
+        List<ParentObject> headers = new ArrayList<>();
         List<String> dates = CalendarUtils.getWeekOfDay(CalendarUtils.getTodaysDate());
 
-        SectionedTaskAdapter.Section monday = new SectionedTaskAdapter.Section(0, getString(R.string.Monday_text));
+        ParentHeader monday = new ParentHeader(getString(R.string.Monday_text));
         List<Task> mTasks = getTaskListsByDate(dates.get(0));
         if (mTasks != null) {
-            for (Task t : mTasks) {
-                monday.addTaskToList(t);
-            }
+            ArrayList<Object> childList = new ArrayList<>();
+            childList.addAll(mTasks);
+            monday.setChildObjectList(childList);
         }
+        headers.add(monday);
 
-        int tuPosition = monday.firstPosition + monday.getNumTasks() + 1;
-        SectionedTaskAdapter.Section tuesday = new SectionedTaskAdapter.Section(tuPosition, getString(R.string.Tuesday_text));
+        ParentHeader tuesday = new ParentHeader(getString(R.string.Tuesday_text));
         List<Task> tuTasks = getTaskListsByDate(dates.get(1));
         if (tuTasks != null) {
-            for (Task t : tuTasks) {
-                tuesday.addTaskToList(t);
-            }
+            ArrayList<Object> childList = new ArrayList<>();
+            childList.addAll(tuTasks);
+            tuesday.setChildObjectList(childList);
         }
+        headers.add(tuesday);
 
-        int wPosition = tuesday.firstPosition + tuesday.getNumTasks() + 1;
-        SectionedTaskAdapter.Section wednesday = new SectionedTaskAdapter.Section(wPosition, getString(R.string.Wednesday_text));
+        ParentHeader wednesday = new ParentHeader(getString(R.string.Wednesday_text));
         List<Task> wTasks = getTaskListsByDate(dates.get(2));
         if (wTasks != null) {
-            for (Task t : wTasks) {
-                wednesday.addTaskToList(t);
-            }
+            ArrayList<Object> childList = new ArrayList<>();
+            childList.addAll(wTasks);
+            wednesday.setChildObjectList(childList);
         }
+        headers.add(wednesday);
 
-        int thPosition = wednesday.firstPosition + wednesday.getNumTasks() + 1;
-        SectionedTaskAdapter.Section thursday = new SectionedTaskAdapter.Section(thPosition, getString(R.string.Thursday_text));
+        ParentHeader thursday = new ParentHeader(getString(R.string.Thursday_text));
         List<Task> thTasks = getTaskListsByDate(dates.get(3));
         if (thTasks != null) {
-            for (Task t : thTasks) {
-                thursday.addTaskToList(t);
-            }
+            ArrayList<Object> childList = new ArrayList<>();
+            childList.addAll(thTasks);
+            thursday.setChildObjectList(childList);
         }
+        headers.add(thursday);
 
-        int fPosition = thursday.firstPosition + thursday.getNumTasks() + 1;
-        SectionedTaskAdapter.Section friday = new SectionedTaskAdapter.Section(fPosition, getString(R.string.Friday_text));
+        ParentHeader friday = new ParentHeader(getString(R.string.Friday_text));
         List<Task> fTasks = getTaskListsByDate(dates.get(4));
         if (fTasks != null) {
-            for (Task t : fTasks) {
-                friday.addTaskToList(t);
-            }
+            ArrayList<Object> childList = new ArrayList<>();
+            childList.addAll(fTasks);
+            friday.setChildObjectList(childList);
         }
+        headers.add(friday);
 
-        int saPosition = friday.firstPosition + friday.getNumTasks() + 1;
-        SectionedTaskAdapter.Section saturday = new SectionedTaskAdapter.Section(saPosition, getString(R.string.Saturday_text));
+        ParentHeader saturday = new ParentHeader(getString(R.string.Saturday_text));
         List<Task> saTasks = getTaskListsByDate(dates.get(5));
         if (saTasks != null) {
-            for (Task t : saTasks) {
-                saturday.addTaskToList(t);
-            }
+            ArrayList<Object> childList = new ArrayList<>();
+            childList.addAll(saTasks);
+            saturday.setChildObjectList(childList);
         }
+        headers.add(saturday);
 
-        int suPosition = saturday.firstPosition + saturday.getNumTasks() + 1;
-        SectionedTaskAdapter.Section sunday = new SectionedTaskAdapter.Section(suPosition, getString(R.string.Sunday_text));
+        ParentHeader sunday = new ParentHeader(getString(R.string.Sunday_text));
         List<Task> suTasks = getTaskListsByDate(dates.get(6));
         if (suTasks != null) {
-            for (Task t : suTasks) {
-                sunday.addTaskToList(t);
-            }
+            ArrayList<Object> childList = new ArrayList<>();
+            childList.addAll(suTasks);
+            sunday.setChildObjectList(childList);
         }
+        headers.add(sunday);
 
-        sections.add(monday);
-        sections.add(tuesday);
-        sections.add(wednesday);
-        sections.add(thursday);
-        sections.add(friday);
-        sections.add(saturday);
-        sections.add(sunday);
 
-        mTasks.addAll(tuTasks);
-        mTasks.addAll(wTasks);
-        mTasks.addAll(thTasks);
-        mTasks.addAll(fTasks);
-        mTasks.addAll(saTasks);
-        mTasks.addAll(suTasks);
-        adapter = new TaskAdapter(this, mTasks);
-        SectionedTaskAdapter.Section[] dummy = new SectionedTaskAdapter.Section[sections.size()];
-        SectionedTaskAdapter sectionedAdapter = new SectionedTaskAdapter(this, R.layout.section, R.id.section_text, adapter);
-        sectionedAdapter.setSections(sections.toArray(dummy));
-        return null;
+//        mTasks.addAll(tuTasks);
+//        mTasks.addAll(wTasks);
+//        mTasks.addAll(thTasks);
+//        mTasks.addAll(fTasks);
+//        mTasks.addAll(saTasks);
+//        mTasks.addAll(suTasks);
+//
+
+        return headers;
     }
 
     /**
@@ -313,11 +332,6 @@ public class TaskGrid extends AppCompatActivity implements DataChangedObserver {
         // for the fragment, which is always the root view for the activity
         transaction.add(android.R.id.content, updateFragment)
                 .addToBackStack(null).commit();
-
-//        updateFragment.show(manager, "update_fragment");
-
-        //transaction.add(R.layout.fragment_update_task, updateFragment, "UpdateFragment");
-        //transaction.commit();
     }
 
     /**

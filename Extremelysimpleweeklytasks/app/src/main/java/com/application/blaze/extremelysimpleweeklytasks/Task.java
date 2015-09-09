@@ -4,8 +4,11 @@ import android.util.Log;
 
 import com.application.blaze.extremelysimpleweeklytasks.util.CalendarUtils;
 
+import org.joda.time.DateTime;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -20,6 +23,7 @@ public class Task {
     private Date date;
     private String time;
     private SimpleDateFormat dateFormatter;
+    private Calendar calendar;
 
     public Task() {
         this.hasPriority = false;
@@ -29,6 +33,7 @@ public class Task {
         this.date = new Date();
         this.time = "";
         dateFormatter = new SimpleDateFormat(CalendarUtils.FORMAT);
+        calendar = Calendar.getInstance();
     }
 
     public Boolean getHasPriority() {
@@ -89,6 +94,11 @@ public class Task {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public int getDay() {
+        calendar.setTime(this.date);
+        return (calendar.get(Calendar.DAY_OF_WEEK) + 5) % 7;
     }
 
 }
